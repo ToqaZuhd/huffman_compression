@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.Math;
 import java.nio.ByteBuffer;
@@ -135,8 +136,9 @@ public class Driver extends Application {
 				
 				huff.huffmanCode(arr);
 				
+				
 				compress comp=new compress();
-				comp.compressFile(file.getText(),huff.getArr(),huff.root);
+				comp.compressFile(file.getText(),huff.getArr(),huff.root,huff.Length);
 				
 
 			} catch (IOException e1) {
@@ -157,5 +159,6 @@ public class Driver extends Application {
 
 	}
 
+	
 	
 }

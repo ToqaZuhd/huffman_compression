@@ -4,6 +4,7 @@ public class Huffman {
 	
 	Heap heap;
 	Node root;
+	int Length;
 	public void huffmanCode(int[] arr) {
 		int count = 0;
 		for (int i = 0; i < arr.length; i++)
@@ -41,9 +42,11 @@ public class Huffman {
 		
 		//heap.inorder(root);
 		heap.inorder(root, s);
-      //  print(heap.getHeap());
+					
+       
+        Length=heap.Length;
         
-        
+       
        
         showTable sT=new showTable(heap.getHeap());
 	}
@@ -68,6 +71,7 @@ public class Huffman {
 	public Node[] getArr() {
 		return heap.getHeap();
 	}
+	
 	
 	
 	

@@ -10,12 +10,12 @@ public class compress {
 	byte[] out = new byte[1040];
 	int count = 0;
 
-	public void compressFile(String string, Node[] arr, Node root) {
+	public void compressFile(String string, Node[] arr, Node root,int length) {
 
 		try {
-
+            
 			FileOutputStream FOUT = new FileOutputStream("out.huf");
-			BufferedOutputStream BOUT = new BufferedOutputStream(FOUT);
+			
 
 			byte[] bytes = new byte[1040];
 
@@ -24,14 +24,31 @@ public class compress {
 			BufferedInputStream BIS = new BufferedInputStream(FIS);
 			int read;
 			String huff = "";
-
+            
 			Header header = new Header();
+			String str=header.extension(string);
+			
+			int number=str.length();
+			FOUT.write(number);
+			
+			convertChar(str);
+			FOUT.write(out, 0, count);
+			count=0;
 			header.postOrderTree(root);
-			header.convert();
+			int len=header.convert();
 			convert(header.numbers);
-			BOUT.write(out, 0, count);
+			
+			FOUT.write(count);
+			FOUT.write(len);
+			FOUT.write(out, 0, count);
+			
 			count = 0;
-			BOUT.write(out,0,count);
+			convertChar(header.character);
+			FOUT.write(count-1);
+			FOUT.write(out,0,count);
+			System.out.println("len= "+length);
+			int diff=8-(length%8);
+			FOUT.write(diff);
             count=0;
 			while (BIS.available() > 0) {
 				read = BIS.read(bytes);
@@ -59,7 +76,7 @@ public class compress {
 
 					if (count == 1040) {
 
-						BOUT.write(out, 0, count);
+						FOUT.write(out, 0, count);
 						count = 0;
 					}
 
@@ -68,30 +85,27 @@ public class compress {
 			}
 
 			if (count > 0) {
-				BOUT.write(out, 0, count);
+				FOUT.write(out, 0, count);
 				count = 0;
 			}
 
-			System.out.println(huff);
-			int res = 0;
+			System.out.println("huff= "+huff);
+			
 			if (huff.length() > 0) {
 
 				if (huff.length() % 8 > 0) {
 
-					res = (huff.length() / 8) + 1;
-
-					int append = (8 * res) - huff.length();
+					int append =8-(huff.length() % 8) ;
 					for (int i = 0; i < append; i++)
 						huff += '0';
 				}
 
 				convert(huff);
-				BOUT.write(out, 0, count);
-				System.out.println("count  "+count);
-				System.out.println("out  "+(char)out[0]+" "+(char)out[1]+" "+(char)out[2]);
-
+				FOUT.write(out, 0, count);
+				
 			}
-			System.out.println(huff);
+			System.out.println("huff= "+huff);
+			header.readHeader("out.huf");
 			FIS.close();
 			BIS.close();
 			FOUT.close();
@@ -105,17 +119,19 @@ public class compress {
 
 	public void convert(String huff) {
 		byte var = 0;
-
+		
+		
 		for (int i = 0, j = 0; i < huff.length(); i++, j++) {
 
 			if ((huff.charAt(i) + "").equals("1")) {
 				var = (byte) (var | (1 << (7 - j % 8)));
 				
 			}
-
+			
 			if (j == 7) {
-				System.out.println("var= "+(char)var);
+				
 				out[count] = var;
+				
 				count++;
 				var = 0;
 				j = -1;
@@ -129,6 +145,10 @@ public class compress {
 		
            for(int i=0;i<number.length();i++) {
         	    out[count]=(byte) number.charAt(i);
+
         	    count++;
 	}}
+	
+	
+	
 }

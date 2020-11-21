@@ -8,11 +8,11 @@ public class Heap {
 
 	private int size = 0;
 	private int count ;
-
+	int Length;
 	
 
 	public Node[] heap;
-
+ public Heap() {}
 	
 	
 	public Node[] getHeap() {
@@ -207,7 +207,7 @@ public class Heap {
         	root.huffman+=s;
         	
         	root.length=s.length();
-        	
+        	Length+=root.length*root.freq_char;
         	heap[(int)root.index]=root;
         	System.out.println((int)heap[(int)root.index].index+"  "+heap[(int)root.index].huffman+"  "+heap[(int)root.index].length+"  "+heap[(int)root.index].freq_char);
 			
@@ -224,7 +224,7 @@ public class Heap {
 			return;
 		else {
 			if(root.Right==null&&root.left==null) {
-				System.out.println("root"+root.freq_char);
+				System.out.println("root"+root.index);
 				return;}
 			
 			inorder(root.left);
@@ -238,6 +238,7 @@ public class Heap {
 			heap[i] = new Node();
 		}
 	}
+	
 	
 	
 }
