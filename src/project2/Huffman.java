@@ -5,15 +5,18 @@ public class Huffman {
 	Heap heap;
 	Node root;
 	int Length;
+	
+	//find the huffman code of each character
 	public void huffmanCode(int[] arr) {
 		int count = 0;
 		for (int i = 0; i < arr.length; i++)
 			if (arr[i] > 0)
 				count++;
-		heap = new Heap(arr, count);
-		heap.print();
-		System.out.println("______________________________________");
 		
+		//build heap with non zero frequency
+		heap = new Heap(arr, count);
+		
+		//build huffman tree
 		for (int i = 1; i <count; i++) {
 			Node newNode = new Node();
 			Node min_Node1 = heap.deleteMin();
@@ -31,43 +34,25 @@ public class Huffman {
 
 		}
 
-		System.out.println("-------------------------------------------------");
-         
+		
+        //array after huffman 
 		Node[] array = heap.getHeap();
 		
-		
+		//root Node which represent the tree
 		root=array[0];
-		heap.clear();
+		heap.clean();
 		String s = "";
 		
-		//heap.inorder(root);
+		//read the huffman code
 		heap.inorder(root, s);
-					
-       
+		
+		//length is the total numbers of all huffman codes for all characters
         Length=heap.Length;
-        
        
        
-        showTable sT=new showTable(heap.getHeap());
 	}
 	
-	public void print(Node []heap) {
-        
-		for (int i = 0; i < heap.length; i++) {
-			System.out.println("heap[" + i + "]=" + heap[i].freq_char);
-			if (heap[i].left != null)
-				System.out.println("left[" + i + "]" + heap[i].left.freq_char);
-			else
-				System.out.println("left[" + i + "]" + null);
-			if (heap[i].Right != null)
-				System.out.println("right[" + i + "]" + heap[i].Right.freq_char);
-			else
-				System.out.println(" right[" + i + "]" + null);
-			System.out.println("frea="+(int)heap[i].index+" "+"num="+heap[i].huffman+"len="+heap[i].length);
-			System.out.println("----------------------");
-		}
-	}
-	
+	//return  the array of node
 	public Node[] getArr() {
 		return heap.getHeap();
 	}

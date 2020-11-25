@@ -6,33 +6,40 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
+
 public class Header {
 
 	FileInputStream FIS;
 	BufferedInputStream BIS;
 
 	String character = "", numbers = "", test = "";
+	Node root;
+	String namefile = "";
+	int diff;
 
 	public Header() {
 	}
 
+	//read huffman tree in post order way 
 	public void postOrderTree(Node root) {
 
 		if (root != null) {
 			if (root.left == null && root.Right == null) {
 				numbers += "1";
 				character += root.index;
-
+                test+="1"+root.index;
 				return;
 			}
 			postOrderTree(root.left);
 			postOrderTree(root.Right);
 			numbers += "0";
-
+            test+="0";
 		}
 
 	}
-
+	
+    //append zero in the end of numbers to be byte
 	public int convert() {
 		int len = numbers.length();
 
@@ -51,41 +58,41 @@ public class Header {
 
 	}
 
-	public String extension(String string) {
-
-		String str = "";
-		str = string.substring(string.lastIndexOf(".") + 1);
-		return str;
-	}
-
-	public void readHeader(String string) {
+	//read the beginning in compress file 
+	public void readHeader(FileInputStream FIS,BufferedInputStream BIS) {
 		try {
+			
 			int num;
 
-			FileInputStream FIS = new FileInputStream(string);
-			BufferedInputStream BIS = new BufferedInputStream(FIS);
 			byte[] bytes;
 
+			//size of file name
 			num = BIS.read();
-			System.out.println("num " + num);
+			
 
 			bytes = new byte[num];
-			String extension = "";
+			
+			//read the file name
 			num = BIS.read(bytes);
 			for (int i = 0; i < num; i++) {
-				extension += (char) bytes[i];
+				namefile += (char) bytes[i];
 			}
-			System.out.println("ext " + extension);
+			System.out.println("fileName  "+namefile);
+			
 
+			//size of s in tree
 			num = BIS.read();
-			System.out.println("num " + num);
+			
 			bytes = new byte[num];
 			String numOftree = "";
 
+			//number of zero will not read in tree
 			int numOfbits = BIS.read();
 
+			//read the numbers
 			num = BIS.read(bytes);
 
+			//convert the numbers from byte to string
 			for (int i = 0; i < num; i++) {
 				String conv = "";
 				int var = bytes[i];
@@ -103,42 +110,42 @@ public class Header {
 				numOftree += conv;
 
 			}
-			numOfbits = numOftree.length() - numOfbits;
-			numOftree = numOftree.substring(0, numOfbits);
+			numOfbits = numOftree.length() - numOfbits;//number of bits will read 
+			numOftree = numOftree.substring(0, numOfbits);//set numbers in tree without addition zero
 
+			//size of character in tree
 			num = BIS.read() + 1;
 
 			bytes = new byte[num];
+			
+			//read characters
 			num = BIS.read(bytes);
 			String chars = "";
 			for (int i = 0; i < num; i++) {
 				chars += (char) bytes[i];
 			}
 
+			//rebuild huffman tree
 			rebuildTree(numOftree, chars);
 
-			int diff = BIS.read();
-			System.out.println("diff= " + diff);
-			/*
-			 * System.out.println("str= "+BIS.read());
-			 * System.out.println("str= "+BIS.read());
-			 * System.out.println("str= "+BIS.read());
-			 * System.out.println("str= "+BIS.read());
-			 */
-			reader(BIS, extension, diff, rebuildTree(numOftree, chars));
-			BIS.close();
+			//number  of zero will not read in compressed data
+			 diff = BIS.read();
+			
+			
 		} catch (IOException e1) {
-			System.out.println("An error occurred.");
-			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, e1);// Handling with Exception via show special message
 		}
 	}
 
-	public Node rebuildTree(String numOftree, String chars) {
-		Node root = new Node();
-
+	//rebuild huffman tree
+	public void rebuildTree(String numOftree, String chars) {
+		
+		//array it size equal size of numbers '0' '1'
 		Node[] nodes = new Node[numOftree.length()];
+		
 		for (int i = 0; i < nodes.length; i++)
 			nodes[i] = new Node();
+		//if the character was '1' then its leaf so read character
 		for (int i = 0, j = 0; i < numOftree.length(); i++) {
 			if (numOftree.charAt(i) == '1') {
 
@@ -150,21 +157,26 @@ public class Header {
 
 			}
 
+			/*if the character was '0' then its not leaf is root so read character set the right node is the previous node
+			 * set left node to serch in left node of previous node to reach nod its left node is null then take the previous index of this node 
+			 * 
+			 * 
+			 * */
 			if (numOftree.charAt(i) == '0') {
 
 				nodes[i].value = i;
 				nodes[i].Right = nodes[i - 1];
 
-				nodes[i].left = nodes[Recursion(nodes[i - 1])];
+				nodes[i].left = nodes[Search(nodes[i - 1])];
 				root = nodes[i];
 
 			}
 		}
 
-		return root;
+		
 	}
 
-	public int Recursion(Node node) {
+	public int Search(Node node) {
 
 		while (node.left != null) {
 			node = node.left;
@@ -173,65 +185,5 @@ public class Header {
 		return node.value - 1;
 	}
 
-	public void reader(BufferedInputStream BIS, String ext, int len, Node root) throws IOException {
-		try {
-			FileOutputStream file = new FileOutputStream("file." + ext);
-			int read;
-			byte[] bytes = new byte[30];
-			byte[] bits = new byte[30];
-			String str = "";
-
-			int nums = ((BIS.available() * 8) - len);
-			Node temp = root;
-			int count = 0;
-			int countBits = 0;
-			int length=0;
-			while (BIS.available() > 0) {
-				read = BIS.read(bytes);
-
-				for (int i = 0; i < read; i++) {
-					String conv = "";
-					int ch = bytes[i];
-					conv= String.format("%8s", Integer.toBinaryString(ch & 0xFF)).replace(' ', '0');
-					str += conv;
-					}
-
-			}		
-	       
-			for (int i = 0, j = 0; i < nums; i++) {
-						if (str.charAt(i) == '0')
-							temp = temp.left;
-						else
-							temp = temp.Right;
-						if (temp.left == null && temp.Right == null) {
-
-							bits[j] = (byte) temp.index;
-                           
-							count++;
-							j++;
-							if (count == 30) {
-								file.write(bits, 0, count);
-								count = 0;
-								j = 0;
-							}
-							temp = root;
-						}
-
-					}
-                
-				
-
-			
-			if(count>0) {
-				file.write(bits, 0, count);
-				
-			}
-
-			file.close();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 }

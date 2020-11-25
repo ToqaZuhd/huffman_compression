@@ -36,16 +36,16 @@ public class showTable {
 	
 
 	
-	// constructor for the Hash table
+	
 	public showTable(Node [] heap) {
 		this.heap = heap;
-		showHash();
+		showHuff();
 	}
 
 
 	
 	// displaying the formatted table
-		private void showHash() {
+		private void showHuff() {
 
 			// creating the table
 			TableView<Node> table = new TableView<Node>();
@@ -75,7 +75,7 @@ public class showTable {
 
 
 			Huffcode.setCellValueFactory(new PropertyValueFactory<Node, String>("huffman"));
-			Huffcode.setMinWidth(350);
+			Huffcode.setMinWidth(280);
 		
 			Length.setCellValueFactory(new PropertyValueFactory<Node, Integer>("length"));
 			Length.setMinWidth(80);
@@ -93,14 +93,14 @@ public class showTable {
 
 			pane.getChildren().addAll(title, table);
 
-			Scene s = new Scene(pane, 600, 580);
+			Scene s = new Scene(pane, 640, 580);
 			
 			stage.setScene(s);
 
 			stage.show();
 		}
 		
-		// getting the contents for the Hash table
+		// getting the contents for the huff table
 		public ObservableList<Node> get(Node[] heap) {
 
 			ObservableList<Node> array = FXCollections.observableArrayList();
@@ -110,8 +110,7 @@ public class showTable {
 			for(int i=0;i<heap.length;i++) {
 				if(heap[i].freq_char>0)
 				array.add(heap[i]);
-				//System.out.println((int)heap[i].index+"  "+heap[i].huffman+"  "+heap[i].length+"  "+heap[i].freq_char);
-			}
+				}
 
 				
 
