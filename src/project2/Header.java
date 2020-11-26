@@ -61,7 +61,7 @@ public class Header {
 	//read the beginning in compress file 
 	public void readHeader(FileInputStream FIS,BufferedInputStream BIS) {
 		try {
-			
+			namefile="";
 			int num;
 
 			byte[] bytes;
@@ -77,7 +77,7 @@ public class Header {
 			for (int i = 0; i < num; i++) {
 				namefile += (char) bytes[i];
 			}
-			System.out.println("fileName  "+namefile);
+			
 			
 
 			//size of s in tree

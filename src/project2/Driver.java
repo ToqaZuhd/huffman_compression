@@ -33,7 +33,7 @@ import javafx.stage.Stage;
 public class Driver extends Application {
 
 	Node[] TableArr;
-
+	compress comp;
 	public void start(Stage stage) throws Exception {
 		// Create panes and set the properties
 		GridPane gPane = new GridPane();
@@ -94,10 +94,10 @@ public class Driver extends Application {
 
 		);
 
-		compress comp = new compress();
+		
 		// buttonCompress clicked show the files
 		buttonCompress.setOnAction(e -> {
-
+			 comp= new compress();
 			// Create a File that selected by user
 			File selectedFile = filechooserComp.showOpenDialog(stage);
 			if (selectedFile != null) {
@@ -105,13 +105,16 @@ public class Driver extends Application {
 			}
 
 			try {
-
+				if(file.getText().substring(file.getText().lastIndexOf('.'))==".huf")
+					JOptionPane.showMessageDialog(null, "The file already compressed");
+			
+				else {
 				byte[] bytes = new byte[1024];
 
 				if (file.getText().isEmpty())
 					throw new IllegalArgumentException();// To throw Exception if there
 
-				// FileInputStream to read the file
+					// FileInputStream to read the file
 				FileInputStream FIS = new FileInputStream(file.getText());
 
 				BufferedInputStream BIS = new BufferedInputStream(FIS);
@@ -151,7 +154,7 @@ public class Driver extends Application {
 				
 				comp.compressFile(file.getText(), huff.getArr(), huff.root, huff.Length);
 				JOptionPane.showMessageDialog(null, "Compressed file is ready");
-
+				}
 			} catch (Exception e1) {
 				JOptionPane.showMessageDialog(null, e1);// Handling with Exception via show special message
 
@@ -251,7 +254,7 @@ public class Driver extends Application {
 	public void reader(BufferedInputStream BIS, String ext, int len, Node root) throws IOException {
 		try {
 			
-				FileOutputStream file = new FileOutputStream(len+"out"+ext);
+			FileOutputStream file = new FileOutputStream(len+"out."+ext);
 			int read;
 			byte[] bytes = new byte[30];
 			byte[] bits = new byte[30];

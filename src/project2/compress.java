@@ -19,7 +19,7 @@ public class compress {
 		try {
             show="";
 			String stri=string.substring(0, string.lastIndexOf('.'));
-			String stri1=string.substring(string.lastIndexOf('.'));
+			String stri1=string.substring(string.lastIndexOf('.')+1);
 			
 			//write the content of compress data in
 			FileOutputStream FOUT = new FileOutputStream(stri+".huf");
@@ -68,7 +68,7 @@ public class compress {
 			
 			//fourth thing is exact size of number (numbers of bits)
 			FOUT.write(len);
-			show+="\n Number of zero will not read in the end of the tree: "+count+"\n Number: ";
+			show+="\n Number of zero will not read in the end of the tree: "+len+"\n Number: ";
 			//fifth thing is the numbers '0' '1' 
 			FOUT.write(out, 0, count);	
 			for(int i=0;i<count;i++)
